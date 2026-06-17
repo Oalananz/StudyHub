@@ -19,7 +19,7 @@ import Tilt3D from "@/components/Tilt3D";
 import { useAuth } from "@/lib/auth";
 
 // 3D scene is client-only (WebGL canvas) so it never runs during static prerender.
-const KnowledgeOrb = dynamic(() => import("@/components/three/KnowledgeOrb"), {
+const Book3D = dynamic(() => import("@/components/three/Book3D"), {
   ssr: false,
   loading: () => null,
 });
@@ -84,7 +84,7 @@ export default function Home() {
             transition={{ duration: 1.4, delay: 0.2 }}
             className="h-full w-full"
           >
-            <KnowledgeOrb />
+            <Book3D />
           </motion.div>
         </div>
 
