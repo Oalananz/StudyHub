@@ -1,0 +1,57 @@
+# Render Blueprint — deploys the whole Study Hub stack (API + Postgres + frontend).
+# Docs: https://render.com/docs/blueprint-spec
+#
+# After the first deploy you must set two cross-references in the Render dashboard
+# (they can't be auto-wired because each needs the other's final URL):
+#   1. studyhub-web  -> NEXT_PUBLIC_API_URL   = https://<your-api>.onrender.com
+#   2. studyhub-api  -> Cors__AllowedOrigins__0 = https://<your-web>.onrender.com
+# Then trigger a redeploy of studyhub-web so the API URL is baked into the static build.
+
+databases:
+  - name: studyhub-db
+    databaseName: studyhub
+    user: studyhub
+    plan: free # NOTE: Render free Postgres is removed after 30 days. For a longer-lived
+               # free DB, create a Supabase project and paste its connection URI into the
+               # studyhub-api ConnectionStrings__Default var instead (the API supports both).
+
+services:
+  # ---------- ASP.NET Core API (Docker) ----------
+  - type: web
+    name: studyhub-api
+    runtime: docker
+    plan: free
+    rootDir: backend/StudyHub.Api
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__Default
+        fromDatabase:
+          name: studyhub-db
+          property: connectionString
+      - key: Jwt__Key
+        generateValue: true # Render generates a strong random secret
+      - key: Jwt__Issuer
+        value: StudyHub
+      - key: Jwt__Audience
+        value: StudyHubClient
+      # Set after first deploy to your frontend URL, then it takes effect immediately.
+      - key: Cors__AllowedOrigins__0
+        sync: false
+
+  # ---------- Next.js frontend (static export) ----------
+  - type: web
+    name: studyhub-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: out
+    envVars:
+      - key: NEXT_OUTPUT
+        value: export
+      # Set to your API URL, then redeploy this service (value is baked in at build time).
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

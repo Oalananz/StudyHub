@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: studyhub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: studyhub
+      POSTGRES_USER: studyhub
+      POSTGRES_PASSWORD: studyhub
+    ports:
+      # Host 5433 -> container 5432 (avoids clashing with a local Postgres on 5432).
+      # The API connects over the internal Docker network, so this is only for your own inspection.
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studyhub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend/StudyHub.Api
+    container_name: studyhub-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=studyhub;Username=studyhub;Password=studyhub"
+      Jwt__Key: "change_me_to_a_long_random_secret_at_least_32_chars_0123456789"
+      Jwt__Issuer: "StudyHub"
+      Jwt__Audience: "StudyHubClient"
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+    ports:
+      - "5080:5080"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: "http://localhost:5080"
+    container_name: studyhub-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
