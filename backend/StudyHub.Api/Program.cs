@@ -46,6 +46,12 @@ builder.Services.AddScoped<GamificationService>();
 // ----- CORS -----
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
                      ?? new[] { "http://localhost:3000" };
+
+var envOrigins = Environment.GetEnvironmentVariable("CORS_ORIGINS")
+    ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+if (envOrigins?.Length > 0)
+    allowedOrigins = allowedOrigins.Concat(envOrigins).Distinct().ToArray();
+
 builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
     p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
 
