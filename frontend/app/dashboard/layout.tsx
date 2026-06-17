@@ -47,7 +47,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile bottom nav */}
       <nav className="glass fixed bottom-0 left-0 right-0 z-30 flex justify-around border-t border-white/10 py-3 md:hidden">
         {mobileLinks.map((l) => {
-          const active = pathname === l.href;
+          const current = pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+          const active = current === l.href;
           return (
             <Link key={l.href} href={l.href} className={active ? "text-violet-soft" : "text-white/50"}>
               <l.icon size={22} />

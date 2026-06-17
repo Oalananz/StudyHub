@@ -25,9 +25,13 @@ const links = [
   { href: "/dashboard/achievements", label: "Achievements", icon: Trophy },
 ];
 
+// Static export uses trailing slashes (e.g. "/dashboard/timer/"), so normalise before comparing.
+const stripSlash = (p: string) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
+
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const current = stripSlash(pathname);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-white/5 bg-ink-800/40 px-4 py-6 backdrop-blur-xl md:flex">
@@ -38,7 +42,7 @@ export default function Sidebar() {
 
       <nav className="flex flex-1 flex-col gap-1">
         {links.map((l) => {
-          const active = pathname === l.href;
+          const active = current === l.href;
           return (
             <Link
               key={l.href}
