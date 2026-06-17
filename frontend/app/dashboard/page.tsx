@@ -76,7 +76,7 @@ export default function DashboardPage() {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <p className="text-sm text-white/40">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
         <h1 className="font-display text-4xl font-semibold">
-          Hey {user?.displayName.split(" ")[0]} 👋
+          Hey {user?.displayName.split(" ")[0]}
         </h1>
         <p className="mt-1 text-white/50">Here's how your studying is going.</p>
       </motion.div>

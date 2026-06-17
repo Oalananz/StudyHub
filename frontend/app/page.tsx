@@ -10,7 +10,6 @@ import {
   NotebookPen,
   Flame,
   BarChart3,
-  Music,
   Trophy,
   ArrowRight,
 } from "lucide-react";
@@ -32,7 +31,6 @@ const features = [
   { icon: NotebookPen, title: "Nested notes", text: "Organise subjects and chapters like a personal wiki.", color: "text-rose" },
   { icon: Flame, title: "Streaks & XP", text: "Keep the flame alive and earn XP for deep work.", color: "text-amber" },
   { icon: BarChart3, title: "Analytics", text: "See where your hours go with subject charts and a heatmap.", color: "text-violet-soft" },
-  { icon: Music, title: "Ambient sound", text: "Rain, lo-fi, café and white-noise to get in the zone.", color: "text-mint" },
   { icon: Trophy, title: "Achievements", text: "Unlock badges for milestones and stay motivated.", color: "text-rose" },
 ];
 
@@ -194,7 +192,6 @@ export default function Home() {
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-6 pb-28">
         <div className="card relative overflow-hidden p-12 text-center">
-          <div className="aurora-blob" style={{ width: 300, height: 300, background: "#7c5cff", top: -80, left: "30%" }} />
           <h2 className="relative font-display text-3xl font-semibold md:text-5xl">
             Ready to get in the zone?
           </h2>
@@ -208,7 +205,11 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-white/5 py-8 text-center text-sm text-white/30">
-        Made for late-night learners · Study Hub
+        <p>Made for late-night learners · Study Hub</p>
+        <p className="mt-1">
+          © {new Date().getFullYear()} Study Hub — owned &amp; built by{" "}
+          <span className="font-medium text-white/60">Oalananz</span>
+        </p>
       </footer>
     </main>
   );

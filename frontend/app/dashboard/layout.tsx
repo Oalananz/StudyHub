@@ -5,7 +5,6 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Loader2, LayoutDashboard, Timer, KanbanSquare, Layers, NotebookPen, Trophy } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
-import AmbientPlayer from "@/components/AmbientPlayer";
 import NotificationBell from "@/components/NotificationBell";
 import { useAuth } from "@/lib/auth";
 
@@ -56,8 +55,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           );
         })}
       </nav>
-
-      <AmbientPlayer />
     </div>
   );
 }

@@ -40,22 +40,22 @@ export default function Sidebar() {
         {links.map((l) => {
           const active = pathname === l.href;
           return (
-            <Link key={l.href} href={l.href} className="relative">
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition ${
+                active ? "text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
+              }`}
+            >
               {active && (
                 <motion.span
                   layoutId="nav-active"
-                  className="absolute inset-0 rounded-2xl bg-violet/15 ring-1 ring-violet/30"
+                  className="absolute inset-0 -z-10 rounded-2xl bg-violet/15 ring-1 ring-violet/30"
                   transition={{ type: "spring", stiffness: 400, damping: 32 }}
                 />
               )}
-              <span
-                className={`relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition ${
-                  active ? "text-white" : "text-white/55 hover:text-white"
-                }`}
-              >
-                <l.icon size={18} className={active ? "text-violet-soft" : ""} />
-                {l.label}
-              </span>
+              <l.icon size={18} className={active ? "text-violet-soft" : ""} />
+              {l.label}
             </Link>
           );
         })}
