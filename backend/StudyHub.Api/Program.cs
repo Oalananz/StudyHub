@@ -141,6 +141,7 @@ static async Task EnsureDatabaseAsync(WebApplication app)
         try
         {
             await db.Database.EnsureCreatedAsync();
+            await SeedAchievementsAsync(db, logger);
             logger.LogInformation("Database ready.");
             return;
         }
@@ -151,4 +152,16 @@ static async Task EnsureDatabaseAsync(WebApplication app)
         }
     }
     throw new Exception("Could not connect to the database after 10 attempts.");
+}
+
+// EnsureCreated only seeds on first create, so top up any achievements added later.
+static async Task SeedAchievementsAsync(AppDbContext db, ILogger logger)
+{
+    var existing = await db.Achievements.Select(a => a.Code).ToListAsync();
+    var missing = AchievementCatalog.All.Where(a => !existing.Contains(a.Code)).ToList();
+    if (missing.Count == 0) return;
+
+    db.Achievements.AddRange(missing);
+    await db.SaveChangesAsync();
+    logger.LogInformation("Seeded {Count} new achievement(s).", missing.Count);
 }

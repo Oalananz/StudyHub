@@ -101,7 +101,8 @@ study/
 ## 🗄️ Database schema
 
 PostgreSQL via EF Core. The schema is created automatically on first boot
-(`Database.EnsureCreated()` in `Program.cs`); the `Achievements` catalog is seeded with 8 rows.
+(`Database.EnsureCreated()` in `Program.cs`); the `Achievements` catalog is seeded with 20 rows
+(and topped up at startup when new badges are added — see `SeedAchievementsAsync`).
 Table names match the `DbSet` names (`Users`, `Sessions`, `Tasks`, `Decks`, `Flashcards`,
 `Notes`, `Achievements`, `UserAchievements`).
 

@@ -55,6 +55,8 @@ public class GamificationService
         var reviewedCards = await _db.Flashcards
             .Where(c => c.Deck!.UserId == user.Id && c.LastReviewedAt != null)
             .CountAsync();
+        var totalDecks = await _db.Decks.CountAsync(d => d.UserId == user.Id);
+        var totalNotes = await _db.Notes.CountAsync(n => n.UserId == user.Id);
 
         var localHour = nowUtc.Hour;
 
@@ -67,9 +69,21 @@ public class GamificationService
         Try("first_session", totalSessions >= 1);
         Try("streak_3", user.CurrentStreak >= 3);
         Try("streak_7", user.CurrentStreak >= 7);
+        Try("streak_14", user.CurrentStreak >= 14);
+        Try("streak_30", user.CurrentStreak >= 30);
         Try("deep_work_10h", totalMinutes >= 600);
+        Try("deep_work_25h", totalMinutes >= 1500);
+        Try("deep_work_50h", totalMinutes >= 3000);
+        Try("sessions_25", totalSessions >= 25);
+        Try("sessions_100", totalSessions >= 100);
         Try("cards_50", reviewedCards >= 50);
+        Try("cards_200", reviewedCards >= 200);
+        Try("cards_500", reviewedCards >= 500);
         Try("task_master", completedTasks >= 25);
+        Try("tasks_50", completedTasks >= 50);
+        Try("tasks_100", completedTasks >= 100);
+        Try("first_deck", totalDecks >= 1);
+        Try("note_taker", totalNotes >= 5);
         Try("night_owl", localHour >= 0 && localHour < 4);
         Try("early_bird", localHour >= 4 && localHour < 7);
 

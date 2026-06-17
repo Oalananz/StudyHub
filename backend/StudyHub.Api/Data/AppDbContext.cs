@@ -57,16 +57,8 @@ public class AppDbContext : DbContext
         b.Entity<UserAchievement>()
             .HasIndex(ua => new { ua.UserId, ua.AchievementCode }).IsUnique();
 
-        // Seed the achievement catalog.
-        b.Entity<Achievement>().HasData(
-            new Achievement { Code = "first_session", Title = "First Steps", Description = "Complete your first study session.", Icon = "🌱", XpReward = 50 },
-            new Achievement { Code = "streak_3", Title = "On a Roll", Description = "Reach a 3-day study streak.", Icon = "🔥", XpReward = 100 },
-            new Achievement { Code = "streak_7", Title = "Week Warrior", Description = "Reach a 7-day study streak.", Icon = "⚡", XpReward = 250 },
-            new Achievement { Code = "deep_work_10h", Title = "Deep Worker", Description = "Log 10 hours of focused study.", Icon = "🧠", XpReward = 300 },
-            new Achievement { Code = "cards_50", Title = "Memory Master", Description = "Review 50 flashcards.", Icon = "🃏", XpReward = 200 },
-            new Achievement { Code = "task_master", Title = "Task Slayer", Description = "Complete 25 tasks.", Icon = "✅", XpReward = 200 },
-            new Achievement { Code = "night_owl", Title = "Night Owl", Description = "Study after midnight.", Icon = "🦉", XpReward = 75 },
-            new Achievement { Code = "early_bird", Title = "Early Bird", Description = "Study before 7 AM.", Icon = "🐦", XpReward = 75 }
-        );
+        // Seed the achievement catalog (fresh databases). Existing databases are topped up
+        // at startup — see SeedAchievementsAsync in Program.cs.
+        b.Entity<Achievement>().HasData(AchievementCatalog.All);
     }
 }
