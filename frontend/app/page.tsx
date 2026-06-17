@@ -74,7 +74,23 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pb-20 pt-12 text-center md:pt-20">
+      <section className="relative mx-auto max-w-6xl px-6 pb-20 pt-12 text-center md:pt-20">
+        {/* 3D knowledge orb — ambient backdrop centered behind the headline (decorative) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-[-40px] z-0 mx-auto h-[560px] w-[820px] max-w-[125%] opacity-50 md:opacity-[0.62]"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.4, delay: 0.2 }}
+            className="h-full w-full"
+          >
+            <KnowledgeOrb />
+          </motion.div>
+        </div>
+
+        <div className="relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -117,39 +133,29 @@ export default function Home() {
           <Link href="/login" className="btn-ghost text-base">I have an account</Link>
         </motion.div>
 
-        {/* 3D knowledge orb + floating timer mockup */}
-        <div className="relative mx-auto mt-8 max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="h-[320px] cursor-grab active:cursor-grabbing md:h-[400px]"
-          >
-            <KnowledgeOrb />
-          </motion.div>
-          <p className="-mt-4 text-center text-xs text-white/30">drag to spin</p>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 40 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="relative z-10 mx-auto -mt-10 max-w-sm"
-          >
-            <div className="animate-float card p-8">
-              <div className="text-xs uppercase tracking-widest text-white/40">Focus session</div>
-              <div className="my-4 font-display text-7xl font-semibold tabular-nums text-gradient">
-                24:13
-              </div>
-              <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-violet to-amber" />
-              </div>
-              <div className="flex justify-center gap-2 text-xs">
-                <span className="chip">🔥 7-day streak</span>
-                <span className="chip">📐 Calculus</span>
-              </div>
-            </div>
-          </motion.div>
         </div>
+
+        {/* Floating timer mockup */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="relative z-10 mx-auto mt-16 max-w-sm"
+        >
+          <div className="animate-float card p-8">
+            <div className="text-xs uppercase tracking-widest text-white/40">Focus session</div>
+            <div className="my-4 font-display text-7xl font-semibold tabular-nums text-gradient">
+              24:13
+            </div>
+            <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-violet to-amber" />
+            </div>
+            <div className="flex justify-center gap-2 text-xs">
+              <span className="chip">🔥 7-day streak</span>
+              <span className="chip">📐 Calculus</span>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Features */}
