@@ -44,16 +44,24 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<GamificationService>();
 
 // ----- CORS -----
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-                     ?? new[] { "http://localhost:3000" };
-
-var envOrigins = Environment.GetEnvironmentVariable("CORS_ORIGINS")
-    ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-if (envOrigins?.Length > 0)
-    allowedOrigins = allowedOrigins.Concat(envOrigins).Distinct().ToArray();
+// Auth uses Bearer tokens (no cookies), so allowing any origin is safe. The API allows any
+// origin by default; lock it down by setting Cors__AllowedOrigins__0 (and __1, ...) or a
+// comma-separated CORS_ORIGINS env var.
+var allowedOrigins = (builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())
+    .Concat((Environment.GetEnvironmentVariable("CORS_ORIGINS") ?? string.Empty)
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+    .Where(o => !string.IsNullOrWhiteSpace(o))
+    .Select(o => o.TrimEnd('/'))
+    .Distinct()
+    .ToArray();
 
 builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
-    p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
+{
+    if (allowedOrigins.Length == 0 || allowedOrigins.Contains("*"))
+        p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    else
+        p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+}));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
