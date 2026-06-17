@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   Timer,
@@ -15,7 +16,14 @@ import {
 } from "lucide-react";
 import AuroraBackground from "@/components/AuroraBackground";
 import Logo from "@/components/Logo";
+import Tilt3D from "@/components/Tilt3D";
 import { useAuth } from "@/lib/auth";
+
+// 3D scene is client-only (WebGL canvas) so it never runs during static prerender.
+const KnowledgeOrb = dynamic(() => import("@/components/three/KnowledgeOrb"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const features = [
   { icon: Timer, title: "Pomodoro & logs", text: "A focus timer that logs every minute you study, automatically.", color: "text-violet-soft" },
@@ -109,27 +117,39 @@ export default function Home() {
           <Link href="/login" className="btn-ghost text-base">I have an account</Link>
         </motion.div>
 
-        {/* Floating timer mockup */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 40 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35 }}
-          className="relative mx-auto mt-16 max-w-md"
-        >
-          <div className="animate-float card p-8">
-            <div className="text-xs uppercase tracking-widest text-white/40">Focus session</div>
-            <div className="my-4 font-display text-7xl font-semibold tabular-nums text-gradient">
-              24:13
+        {/* 3D knowledge orb + floating timer mockup */}
+        <div className="relative mx-auto mt-8 max-w-2xl">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="h-[320px] cursor-grab active:cursor-grabbing md:h-[400px]"
+          >
+            <KnowledgeOrb />
+          </motion.div>
+          <p className="-mt-4 text-center text-xs text-white/30">drag to spin</p>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="relative z-10 mx-auto -mt-10 max-w-sm"
+          >
+            <div className="animate-float card p-8">
+              <div className="text-xs uppercase tracking-widest text-white/40">Focus session</div>
+              <div className="my-4 font-display text-7xl font-semibold tabular-nums text-gradient">
+                24:13
+              </div>
+              <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-violet to-amber" />
+              </div>
+              <div className="flex justify-center gap-2 text-xs">
+                <span className="chip">🔥 7-day streak</span>
+                <span className="chip">📐 Calculus</span>
+              </div>
             </div>
-            <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-violet to-amber" />
-            </div>
-            <div className="flex justify-center gap-2 text-xs">
-              <span className="chip">🔥 7-day streak</span>
-              <span className="chip">📐 Calculus</span>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Features */}
@@ -150,12 +170,16 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, margin: "-60px" }}
               custom={i}
-              whileHover={{ y: -6 }}
-              className="card group p-6 transition-shadow hover:shadow-glow"
             >
-              <f.icon className={`mb-4 ${f.color}`} size={28} />
-              <h3 className="mb-1.5 font-display text-lg font-semibold">{f.title}</h3>
-              <p className="text-sm leading-relaxed text-white/50">{f.text}</p>
+              <Tilt3D max={12} className="h-full">
+                <div className="card group h-full p-6 transition-shadow hover:shadow-glow">
+                  <f.icon className={`mb-4 ${f.color}`} size={28} style={{ transform: "translateZ(40px)" }} />
+                  <h3 className="mb-1.5 font-display text-lg font-semibold" style={{ transform: "translateZ(24px)" }}>
+                    {f.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-white/50">{f.text}</p>
+                </div>
+              </Tilt3D>
             </motion.div>
           ))}
         </div>

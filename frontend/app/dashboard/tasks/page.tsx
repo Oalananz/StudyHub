@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Calendar, Loader2, GripVertical } from "lucide-react";
+import { Plus, Trash2, Calendar, GripVertical } from "lucide-react";
 import { api, Task, TaskStatus } from "@/lib/api";
+import { BoardSkeleton } from "@/components/skeletons";
 
 const COLUMNS: { status: TaskStatus; title: string; accent: string }[] = [
   { status: 0, title: "To do", accent: "border-t-rose" },
@@ -46,11 +47,7 @@ export default function TasksPage() {
   }
 
   if (loading) {
-    return (
-      <div className="grid h-[60vh] place-items-center">
-        <Loader2 className="animate-spin text-violet" size={28} />
-      </div>
-    );
+    return <BoardSkeleton />;
   }
 
   return (

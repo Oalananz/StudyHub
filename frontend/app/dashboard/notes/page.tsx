@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Trash2, FileText, Loader2, Check } from "lucide-react";
+import { Plus, Trash2, FileText, Check } from "lucide-react";
 import { api, Note } from "@/lib/api";
+import { NotesSkeleton } from "@/components/skeletons";
 
 export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -49,7 +50,7 @@ export default function NotesPage() {
   }
 
   if (loading) {
-    return <div className="grid h-[60vh] place-items-center"><Loader2 className="animate-spin text-violet" size={28} /></div>;
+    return <NotesSkeleton />;
   }
 
   return (

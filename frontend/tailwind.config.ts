@@ -51,6 +51,7 @@ const config: Config = {
       animation: {
         float: "float 6s ease-in-out infinite",
         aurora: "aurora 18s ease-in-out infinite",
+        shimmer: "shimmer 1.6s infinite",
       },
     },
   },

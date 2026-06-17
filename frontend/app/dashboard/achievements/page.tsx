@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { api, Achievement } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { AchievementsSkeleton } from "@/components/skeletons";
 
 export default function AchievementsPage() {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ export default function AchievementsPage() {
   }, []);
 
   if (!items) {
-    return <div className="grid h-[60vh] place-items-center"><Loader2 className="animate-spin text-violet" size={28} /></div>;
+    return <AchievementsSkeleton />;
   }
 
   const unlocked = items.filter((a) => a.unlocked).length;

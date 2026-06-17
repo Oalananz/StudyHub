@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Layers, Loader2, ArrowLeft, GraduationCap, Sparkles } from "lucide-react";
 import { api, Deck, Card } from "@/lib/api";
+import { CardsGridSkeleton } from "@/components/skeletons";
 
 const DECK_COLORS = ["#7c5cff", "#ffb86b", "#5eead4", "#ff7eb6", "#9d86ff", "#fbbf24"];
 
@@ -20,7 +21,7 @@ export default function FlashcardsPage() {
   useEffect(() => { load(); }, []);
 
   if (loading) {
-    return <div className="grid h-[60vh] place-items-center"><Loader2 className="animate-spin text-violet" size={28} /></div>;
+    return <CardsGridSkeleton />;
   }
 
   if (active) {

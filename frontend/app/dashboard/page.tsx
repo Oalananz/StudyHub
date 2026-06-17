@@ -10,9 +10,10 @@ import {
   XAxis,
   Cell,
 } from "recharts";
-import { Clock, Flame, Layers, CheckCircle2, Loader2 } from "lucide-react";
+import { Clock, Flame, Layers, CheckCircle2 } from "lucide-react";
 import { api, Dashboard } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { DashboardSkeleton } from "@/components/skeletons";
 
 const SUBJECT_COLORS = ["#7c5cff", "#ffb86b", "#5eead4", "#ff7eb6", "#9d86ff", "#fbbf24"];
 
@@ -58,11 +59,7 @@ export default function DashboardPage() {
   }, []);
 
   if (!data) {
-    return (
-      <div className="grid h-[60vh] place-items-center">
-        <Loader2 className="animate-spin text-violet" size={28} />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const stats = [
