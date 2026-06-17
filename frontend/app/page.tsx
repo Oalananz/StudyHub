@@ -89,16 +89,6 @@ export default function Home() {
         </div>
 
         <div className="relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/60"
-        >
-          <span className="h-2 w-2 animate-pulse rounded-full bg-mint" />
-          Your cozy corner for deep work
-        </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
