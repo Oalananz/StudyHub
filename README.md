@@ -1,130 +1,111 @@
-# 📚 Study Hub
+<div align="center">
 
-> A full-stack study platform — Pomodoro timer, spaced-repetition flashcards, Kanban tasks, hierarchical notes, analytics, streaks and gamification — in one place.
+<img src="frontend/public/favicon.svg" width="96" alt="Study Hub logo" />
+
+# Study Hub
+
+**Your focus timer, flashcards, tasks & notes — all in one calm study space.**
 
 <p>
-  <img alt=".NET" src="https://img.shields.io/badge/.NET%208-512BD4?logo=dotnet&logoColor=white">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js%2014-000000?logo=nextdotjs&logoColor=white">
+  <img alt=".NET 8" src="https://img.shields.io/badge/.NET%208-512BD4?logo=dotnet&logoColor=white">
+  <img alt="Next.js 14" src="https://img.shields.io/badge/Next.js%2014-000000?logo=nextdotjs&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white">
   <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white">
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg">
 </p>
 
-- **Backend:** ASP.NET Core 8 Web API (C#)
-- **Frontend:** Next.js 14 (App Router, TypeScript, Tailwind, Framer Motion)
-- **Database:** PostgreSQL (Entity Framework Core)
-
-## Contents
-
-- [Quick start (Docker)](#-quick-start-docker--recommended)
-- [Local development](#-local-development-without-docker)
-- [Features](#-features)
-- [Project structure](#️-project-structure)
-- [Database schema](#️-database-schema)
-- [API reference](#-api-reference)
-- [Environment variables](#-environment-variables)
-- [Deployment](#-deployment)
-- [License](#-license)
+</div>
 
 ---
 
-## 🚀 Quick start (Docker — recommended)
+## ✨ Features
 
-You only need [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
+|  |  |
+|--|--|
+| ⏱️ **Pomodoro timer** — configurable work/break, runs accurately even in background tabs | 📊 **Analytics** — focus hours, per-subject breakdown, 90-day heatmap |
+| 🃏 **Flashcards** — decks with SM-2 spaced repetition | 🗂️ **Kanban board** — To do / Doing / Done task flow |
+| 📝 **Notes** — nestable, hierarchical notebooks | 🔥 **Streaks** — daily study streak tracking |
+| 🏆 **Gamification** — XP + 20 achievement badges | 🔐 **Auth** — JWT accounts, BCrypt-hashed passwords |
+
+> 🔜 **Planned:** AI quiz generator / Socratic tutor · live study rooms — see [ROADMAP.md](ROADMAP.md).
+
+---
+
+## 🚀 Quick start
+
+All you need is [Docker Desktop](https://www.docker.com/products/docker-desktop/):
 
 ```bash
 docker compose up --build
 ```
 
-Then open:
+| Service | URL |
+|---------|-----|
+| 🖥️ Frontend | http://localhost:3000 |
+| 🔌 API + Swagger | http://localhost:5080/swagger |
 
-- Frontend → http://localhost:3000
-- API + Swagger → http://localhost:5080/swagger
+The database is created and migrated automatically. Register an account and start studying.
+Stop with `Ctrl+C`, then `docker compose down` (add `-v` to wipe the DB volume).
 
-The database is created and migrated automatically on first run. Create an account on the
-register page and start studying.
+<details>
+<summary><b>🧑‍💻 Run locally without Docker</b></summary>
 
-To stop: `Ctrl+C`, then `docker compose down` (add `-v` to also wipe the database volume).
+<br>
 
----
-
-## 🧑‍💻 Local development (without Docker)
-
-### 1. PostgreSQL
-Have a Postgres 15+ instance running. Default connection used by the API:
+**1. PostgreSQL 15+** — default connection used by the API:
 
 ```
 Host=localhost;Port=5432;Database=studyhub;Username=studyhub;Password=studyhub
 ```
 
-Override via the `ConnectionStrings__Default` environment variable or `appsettings.Development.json`.
+Override via `ConnectionStrings__Default` or `appsettings.Development.json`.
 
-### 2. Backend
+**2. Backend** → http://localhost:5080 (migrations apply on startup):
+
 ```bash
 cd backend/StudyHub.Api
 dotnet restore
 dotnet run
 ```
-API runs on http://localhost:5080. Migrations are applied automatically at startup.
 
-### 3. Frontend
+**3. Frontend** → http://localhost:3000:
+
 ```bash
 cd frontend
 cp .env.local.example .env.local   # points NEXT_PUBLIC_API_URL at the API
 npm install
 npm run dev
 ```
-Frontend runs on http://localhost:3000.
+
+</details>
 
 ---
 
-## ✨ Features
+## 🏗️ Tech stack
 
-| Area | Feature | Status |
-|------|---------|--------|
-| Focus | Pomodoro timer (configurable work/break) | ✅ |
-| Focus | Session logging + time analytics per subject | ✅ |
-| Productivity | Kanban task board (To do / Doing / Done) | ✅ |
-| Learning | Flashcard decks with SM-2 spaced repetition | ✅ |
-| Learning | Hierarchical notes | ✅ |
-| Motivation | Study streaks | ✅ |
-| Motivation | Achievement badges + XP | ✅ |
-| Tracking | Dashboard analytics (focus hours, heatmap) | ✅ |
-| AI | Quiz generator / Socratic tutor | 🔜 planned |
-| Collab | Live study rooms (WebRTC) | 🔜 planned |
-
-See [ROADMAP.md](ROADMAP.md) for the planned features and how they'd be wired in.
-
----
-
-## 🏗️ Project structure
+**ASP.NET Core 8** Web API · **Next.js 14** (App Router, TypeScript, Tailwind, Framer Motion) · **PostgreSQL** via EF Core.
 
 ```
 StudyHub/
 ├── docker-compose.yml
-├── backend/
-│   └── StudyHub.Api/        # ASP.NET Core 8 Web API
-│       ├── Controllers/
-│       ├── Models/
-│       ├── Data/
-│       ├── Services/
-│       └── DTOs/
-└── frontend/                # Next.js 14 app
-    ├── app/
-    ├── components/
-    └── lib/
+├── backend/StudyHub.Api/   # ASP.NET Core 8 — Controllers, Models, Data, Services, DTOs
+└── frontend/               # Next.js 14 — app/, components/, lib/
 ```
 
 ---
 
-## 🗄️ Database schema
+## 📖 Reference
+
+<details>
+<summary><b>🗄️ Database schema</b></summary>
+
+<br>
 
 PostgreSQL via EF Core. The schema is created automatically on first boot
 (`Database.EnsureCreated()` in `Program.cs`); the `Achievements` catalog is seeded with 20 rows
 (and topped up at startup when new badges are added — see `SeedAchievementsAsync`).
-Table names match the `DbSet` names (`Users`, `Sessions`, `Tasks`, `Decks`, `Flashcards`,
-`Notes`, `Achievements`, `UserAchievements`).
+Table names match the `DbSet` names.
 
 ```mermaid
 erDiagram
@@ -230,15 +211,18 @@ erDiagram
 | UnlockedAt | timestamptz | |
 | | | **unique** (UserId, AchievementCode) |
 
----
+</details>
 
-## 🔌 API reference
+<details>
+<summary><b>🔌 API reference</b></summary>
+
+<br>
 
 Base URL: `http://localhost:5080` (local) · interactive docs at **`/swagger`**.
 
-**Auth:** all endpoints under `/api/*` require a JWT **except** `register` and `login`.
-Send it as a header: `Authorization: Bearer <token>`. Tokens are returned by register/login
-and expire after 30 days. All request/response bodies are JSON.
+**Auth:** all `/api/*` endpoints require a JWT **except** `register` and `login`.
+Send it as `Authorization: Bearer <token>`. Tokens come from register/login and expire after 30 days.
+All bodies are JSON. 🔒 = auth required.
 
 ### Public
 | Method | Path | Description |
@@ -296,25 +280,12 @@ and expire after 30 days. All request/response bodies are JSON.
 | `GET` | `/` | Stats: total/today minutes, session count, due cards, open tasks, time-by-subject, 90-day heatmap |
 | `GET` | `/achievements` | Full badge catalog with `unlocked` + `unlockedAt` per badge |
 
-<details>
-<summary>Example: register response</summary>
-
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "0b3f...e1", "displayName": "Ana", "email": "ana@example.com",
-    "xp": 0, "currentStreak": 0, "longestStreak": 0,
-    "pomodoroWorkMinutes": 25, "pomodoroShortBreakMinutes": 5,
-    "pomodoroLongBreakMinutes": 15, "pomodoroRoundsBeforeLongBreak": 4
-  }
-}
-```
 </details>
 
----
+<details>
+<summary><b>🔐 Environment variables</b></summary>
 
-## 🔐 Environment variables
+<br>
 
 | Variable | Where | Default | Notes |
 |----------|-------|---------|-------|
@@ -328,17 +299,15 @@ and expire after 30 days. All request/response bodies are JSON.
 
 **In production, set a strong `Jwt__Key` (32+ chars) and real DB credentials.**
 
+</details>
+
 ---
 
 ## 🚀 Deployment
 
-The whole stack is configured for one-click deploy on **Render** (Blueprint in
-[`render.yaml`](render.yaml)), and the frontend can be hosted statically on
-Vercel / Netlify / GitHub Pages. See **[DEPLOY.md](DEPLOY.md)** for step-by-step
-instructions (Render / Supabase / Vercel / Netlify).
-
----
+One-click deploy on **Render** (Blueprint in [`render.yaml`](render.yaml)); the frontend can also be
+hosted statically on Vercel / Netlify / GitHub Pages. Full guide → **[DEPLOY.md](DEPLOY.md)**.
 
 ## 📄 License
 
-Released under the [MIT License](LICENSE) © Osamah Ananzeh.
+[MIT](LICENSE) © Osamah Ananzeh
