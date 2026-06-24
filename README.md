@@ -1,10 +1,31 @@
 # 📚 Study Hub
 
-A full-stack study platform with a Pomodoro timer, session logs, flashcards (spaced repetition), a Kanban board, notes, analytics, streaks, gamification, and ambient soundscapes.
+> A full-stack study platform — Pomodoro timer, spaced-repetition flashcards, Kanban tasks, hierarchical notes, analytics, streaks and gamification — in one place.
+
+<p>
+  <img alt=".NET" src="https://img.shields.io/badge/.NET%208-512BD4?logo=dotnet&logoColor=white">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js%2014-000000?logo=nextdotjs&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg">
+</p>
 
 - **Backend:** ASP.NET Core 8 Web API (C#)
 - **Frontend:** Next.js 14 (App Router, TypeScript, Tailwind, Framer Motion)
 - **Database:** PostgreSQL (Entity Framework Core)
+
+## Contents
+
+- [Quick start (Docker)](#-quick-start-docker--recommended)
+- [Local development](#-local-development-without-docker)
+- [Features](#-features)
+- [Project structure](#️-project-structure)
+- [Database schema](#️-database-schema)
+- [API reference](#-api-reference)
+- [Environment variables](#-environment-variables)
+- [Deployment](#-deployment)
+- [License](#-license)
 
 ---
 
@@ -64,24 +85,23 @@ Frontend runs on http://localhost:3000.
 |------|---------|--------|
 | Focus | Pomodoro timer (configurable work/break) | ✅ |
 | Focus | Session logging + time analytics per subject | ✅ |
-| Focus | Ambient soundscapes (rain, lo-fi, white noise, café) | ✅ |
 | Productivity | Kanban task board (To do / Doing / Done) | ✅ |
 | Learning | Flashcard decks with SM-2 spaced repetition | ✅ |
 | Learning | Hierarchical notes | ✅ |
 | Motivation | Study streaks | ✅ |
 | Motivation | Achievement badges + XP | ✅ |
 | Tracking | Dashboard analytics (focus hours, heatmap) | ✅ |
-| AI | Quiz generator / Socratic tutor | 🔜 scaffolded |
-| Collab | Live study rooms (WebRTC) | 🔜 scaffolded |
+| AI | Quiz generator / Socratic tutor | 🔜 planned |
+| Collab | Live study rooms (WebRTC) | 🔜 planned |
 
-See `ROADMAP.md` for how the scaffolded features are wired.
+See [ROADMAP.md](ROADMAP.md) for the planned features and how they'd be wired in.
 
 ---
 
 ## 🏗️ Project structure
 
 ```
-study/
+StudyHub/
 ├── docker-compose.yml
 ├── backend/
 │   └── StudyHub.Api/        # ASP.NET Core 8 Web API
@@ -307,4 +327,18 @@ and expire after 30 days. All request/response bodies are JSON.
 | `NEXT_OUTPUT` | Frontend build | _(unset)_ | `standalone` (Docker) or `export` (static hosting) |
 
 **In production, set a strong `Jwt__Key` (32+ chars) and real DB credentials.**
-See [DEPLOY.md](DEPLOY.md) for hosting (Render / Supabase / Vercel / Netlify).
+
+---
+
+## 🚀 Deployment
+
+The whole stack is configured for one-click deploy on **Render** (Blueprint in
+[`render.yaml`](render.yaml)), and the frontend can be hosted statically on
+Vercel / Netlify / GitHub Pages. See **[DEPLOY.md](DEPLOY.md)** for step-by-step
+instructions (Render / Supabase / Vercel / Netlify).
+
+---
+
+## 📄 License
+
+Released under the [MIT License](LICENSE) © Osamah Ananzeh.

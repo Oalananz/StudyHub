@@ -32,4 +32,4 @@ for leaderboards — add a `GET /api/leaderboard` endpoint ordering users by XP.
 ## Already shipped ✅
 Pomodoro timer + logs, time analytics, 90-day heatmap, Kanban board, spaced-repetition
 flashcards (SM-2), hierarchical notes, study streaks, XP + achievement badges,
-ambient soundscapes, JWT auth, Docker deployment.
+JWT auth, Docker deployment.
