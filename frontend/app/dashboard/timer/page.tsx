@@ -20,6 +20,10 @@ export default function TimerPage() {
   const [toast, setToast] = useState<string | null>(null);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Absolute wall-clock time (ms) when the current phase ends. Driving the
+  // countdown from a timestamp (instead of decrementing a counter) keeps it
+  // accurate even when the tab is backgrounded and setInterval is throttled.
+  const deadlineRef = useRef<number | null>(null);
 
   const durations = {
     work: (user?.pomodoroWorkMinutes ?? 25) * 60,
@@ -87,20 +91,47 @@ export default function TimerPage() {
   }, [phase, round, roundsBeforeLong, logSession, user, subject]);
 
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSecondsLeft((s) => {
-          if (s <= 1) {
-            clearInterval(intervalRef.current!);
-            advancePhase();
-            return 0;
-          }
-          return s - 1;
-        });
-      }, 1000);
+    if (!running) {
+      deadlineRef.current = null;
+      return;
     }
+    // Anchor the deadline once when the timer starts/resumes. Re-runs of this
+    // effect (e.g. subject change) keep the existing deadline so it never drifts.
+    if (deadlineRef.current === null) {
+      setSecondsLeft((s) => {
+        deadlineRef.current = Date.now() + s * 1000;
+        return s;
+      });
+    }
+
+    const tick = () => {
+      const remaining = Math.max(
+        0,
+        Math.round(((deadlineRef.current ?? Date.now()) - Date.now()) / 1000)
+      );
+      if (remaining <= 0) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        deadlineRef.current = null;
+        setSecondsLeft(0);
+        advancePhase();
+      } else {
+        setSecondsLeft(remaining);
+      }
+    };
+
+    tick(); // sync immediately (covers returning to a backgrounded tab)
+    intervalRef.current = setInterval(tick, 250);
+
+    // Snap straight to the correct time the instant the tab becomes visible,
+    // rather than waiting for the throttled interval to catch up.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [running, advancePhase]);
 
@@ -120,6 +151,7 @@ export default function TimerPage() {
 
   function reset() {
     setRunning(false);
+    deadlineRef.current = null;
     setSecondsLeft(durations[phase]);
   }
 
