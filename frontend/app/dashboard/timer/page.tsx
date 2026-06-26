@@ -24,6 +24,11 @@ export default function TimerPage() {
   // countdown from a timestamp (instead of decrementing a counter) keeps it
   // accurate even when the tab is backgrounded and setInterval is throttled.
   const deadlineRef = useRef<number | null>(null);
+  // Mirror of secondsLeft kept in a ref so the timer effect can read the
+  // current value synchronously without adding it to the dependency array.
+  const secondsLeftRef = useRef(secondsLeft);
+
+  secondsLeftRef.current = secondsLeft;
 
   const durations = {
     work: (user?.pomodoroWorkMinutes ?? 25) * 60,
@@ -97,11 +102,11 @@ export default function TimerPage() {
     }
     // Anchor the deadline once when the timer starts/resumes. Re-runs of this
     // effect (e.g. subject change) keep the existing deadline so it never drifts.
+    // We read secondsLeftRef (kept current every render) so this is synchronous —
+    // the old pattern of setting a ref inside a state-setter callback is async and
+    // caused tick() to see null and immediately fire advancePhase on press-Play.
     if (deadlineRef.current === null) {
-      setSecondsLeft((s) => {
-        deadlineRef.current = Date.now() + s * 1000;
-        return s;
-      });
+      deadlineRef.current = Date.now() + secondsLeftRef.current * 1000;
     }
 
     const tick = () => {
@@ -212,7 +217,7 @@ export default function TimerPage() {
             strokeWidth={14}
             strokeLinecap="round"
             strokeDasharray={C}
-            animate={{ strokeDashoffset: C * (1 - progress) }}
+            animate={{ strokeDashoffset: C * progress }}
             transition={{ ease: "linear", duration: 0.4 }}
             style={{ filter: `drop-shadow(0 0 12px ${phaseMeta.color})` }}
           />

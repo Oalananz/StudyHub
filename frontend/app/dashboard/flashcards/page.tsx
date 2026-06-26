@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Layers, Loader2, ArrowLeft, GraduationCap, Sparkles } from "lucide-react";
 import { api, Deck, Card } from "@/lib/api";
@@ -255,12 +255,12 @@ function StudyMode({ deck, onExit }: { deck: Deck; onExit: () => void }) {
         <motion.div
           onClick={() => setFlipped((f) => !f)}
           className="grid min-h-[320px] cursor-pointer place-items-center rounded-3xl p-10 text-center"
-          style={{ transformStyle: "preserve-3d" }}
+          style={{ transformStyle: "preserve-3d", WebkitTransformStyle: "preserve-3d" } as React.CSSProperties}
           animate={{ rotateY: flipped ? 180 : 0 }}
           transition={{ duration: 0.5 }}
         >
           {/* Front */}
-          <div className="card absolute inset-0 grid place-items-center p-10" style={{ backfaceVisibility: "hidden" }}>
+          <div className="card absolute inset-0 grid place-items-center p-10" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
             <div>
               <p className="mb-4 text-xs uppercase tracking-widest text-white/30">Question</p>
               <p className="font-display text-2xl">{card.front}</p>
@@ -270,7 +270,7 @@ function StudyMode({ deck, onExit }: { deck: Deck; onExit: () => void }) {
           {/* Back */}
           <div
             className="card absolute inset-0 grid place-items-center bg-violet/10 p-10"
-            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             <div>
               <p className="mb-4 text-xs uppercase tracking-widest text-white/30">Answer</p>
