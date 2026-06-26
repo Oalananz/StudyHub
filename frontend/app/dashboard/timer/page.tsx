@@ -9,13 +9,59 @@ import { requestNotificationPermission, sendBrowserNotification } from "@/lib/br
 
 type Phase = "work" | "short" | "long";
 
+// ── Persistence helpers ────────────────────────────────────────────────────
+// Timer state is saved to localStorage so navigating to another page and
+// coming back doesn't reset the countdown.
+
+const TIMER_KEY = "studyhub_timer_v1";
+
+interface SavedTimer {
+  phase: Phase;
+  round: number;
+  subject: string;
+  running: boolean;
+  secondsLeft: number;
+  deadline: number | null;
+}
+
+function loadTimer(): SavedTimer | null {
+  try {
+    if (typeof window === "undefined") return null;
+    const raw = localStorage.getItem(TIMER_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw) as SavedTimer;
+    const VALID_PHASES: Phase[] = ["work", "short", "long"];
+    const phase: Phase = VALID_PHASES.includes(s.phase) ? s.phase : "work";
+    // For a running timer recalculate how much is left based on the saved
+    // absolute deadline so the countdown is accurate even after a long absence.
+    if (s.running && s.deadline != null) {
+      const remaining = Math.max(0, Math.round((s.deadline - Date.now()) / 1000));
+      if (remaining > 0) {
+        return { phase, round: s.round ?? 1, subject: s.subject ?? "General", running: true, secondsLeft: remaining, deadline: s.deadline };
+      }
+      // Deadline passed while away — restore as stopped (don't auto-advance)
+    }
+    return { phase, round: s.round ?? 1, subject: s.subject ?? "General", running: false, secondsLeft: s.secondsLeft ?? 25 * 60, deadline: null };
+  } catch { return null; }
+}
+
+function saveTimer(s: SavedTimer) {
+  try { localStorage.setItem(TIMER_KEY, JSON.stringify(s)); } catch { /* quota / private mode */ }
+}
+
+// ── Component ──────────────────────────────────────────────────────────────
 export default function TimerPage() {
   const { user, setUser } = useAuth();
-  const [phase, setPhase] = useState<Phase>("work");
-  const [secondsLeft, setSecondsLeft] = useState(25 * 60);
-  const [running, setRunning] = useState(false);
-  const [round, setRound] = useState(1);
-  const [subject, setSubject] = useState("General");
+
+  // Lazy-read localStorage once so state is correct from the very first render —
+  // no flash of "25:00 / stopped" when navigating back mid-session.
+  const [init] = useState(loadTimer);
+
+  const [phase, setPhase] = useState<Phase>(init?.phase ?? "work");
+  const [secondsLeft, setSecondsLeft] = useState(init?.secondsLeft ?? 25 * 60);
+  const [running, setRunning] = useState(init?.running ?? false);
+  const [round, setRound] = useState(init?.round ?? 1);
+  const [subject, setSubject] = useState(init?.subject ?? "General");
   const [showSettings, setShowSettings] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -23,10 +69,11 @@ export default function TimerPage() {
   // Absolute wall-clock time (ms) when the current phase ends. Driving the
   // countdown from a timestamp (instead of decrementing a counter) keeps it
   // accurate even when the tab is backgrounded and setInterval is throttled.
-  const deadlineRef = useRef<number | null>(null);
+  // Pre-seeded from localStorage when we restored a running timer.
+  const deadlineRef = useRef<number | null>(init?.running ? (init.deadline ?? null) : null);
   // Mirror of secondsLeft kept in a ref so the timer effect can read the
   // current value synchronously without adding it to the dependency array.
-  const secondsLeftRef = useRef(secondsLeft);
+  const secondsLeftRef = useRef(init?.secondsLeft ?? 25 * 60);
 
   secondsLeftRef.current = secondsLeft;
 
@@ -37,11 +84,25 @@ export default function TimerPage() {
   };
   const roundsBeforeLong = user?.pomodoroRoundsBeforeLongBreak ?? 4;
 
+  // When we restore state from localStorage we skip the very first run of the
+  // phase-reset effect so it doesn't overwrite the restored secondsLeft with
+  // the phase's full default duration.
+  const skipNextPhaseReset = useRef(init != null);
+
   // Reset timer when phase or settings change (and not running)
   useEffect(() => {
+    if (skipNextPhaseReset.current) {
+      skipNextPhaseReset.current = false;
+      return;
+    }
     if (!running) setSecondsLeft(durations[phase]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, user?.pomodoroWorkMinutes, user?.pomodoroShortBreakMinutes, user?.pomodoroLongBreakMinutes]);
+
+  // Persist timer state so it survives page navigation
+  useEffect(() => {
+    saveTimer({ phase, round, subject, running, secondsLeft, deadline: deadlineRef.current });
+  }, [phase, round, subject, running, secondsLeft]);
 
   const logSession = useCallback(
     async (minutes: number) => {
@@ -101,10 +162,8 @@ export default function TimerPage() {
       return;
     }
     // Anchor the deadline once when the timer starts/resumes. Re-runs of this
-    // effect (e.g. subject change) keep the existing deadline so it never drifts.
-    // We read secondsLeftRef (kept current every render) so this is synchronous —
-    // the old pattern of setting a ref inside a state-setter callback is async and
-    // caused tick() to see null and immediately fire advancePhase on press-Play.
+    // effect (e.g. subject change, or restored running timer) keep the existing
+    // deadline so it never drifts.
     if (deadlineRef.current === null) {
       deadlineRef.current = Date.now() + secondsLeftRef.current * 1000;
     }
